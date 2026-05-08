@@ -1,0 +1,33 @@
+name: 'LGTM Security Watchdog'
+description: 'Halt CI runs that LGTM Security has flagged for blocking issues. Soft-fails on outage so it never breaks your CI for our reasons.'
+author: 'Tarin Agarwal'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  api-token:
+    description: 'LGTM API token with `pipeline:read` scope. Generate at https://looksgoodtomeow.in/dashboard/security/tokens.'
+    required: true
+  api-url:
+    description: 'Base URL of the LGTM API. Override only for self-hosted deployments.'
+    required: false
+    default: 'https://api.looksgoodtomeow.in'
+  fail-on-network-error:
+    description: 'If true, the action fails the job when the LGTM API is unreachable. Default false (soft-fail) so an LGTM outage never breaks your CI.'
+    required: false
+    default: 'false'
+  poll-timeout-seconds:
+    description: 'Max seconds to wait for a scan decision to land. The Action polls in case the push-triggered scan is still running.'
+    required: false
+    default: '90'
+
+outputs:
+  halt:
+    description: 'true if LGTM Security computed a halt decision for this commit.'
+  reasons:
+    description: 'Newline-separated list of reasons (only set when halt=true).'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

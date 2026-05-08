@@ -1,0 +1,485 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+html {
+  font-size: 100%;
+}
+
+@media (min-width: 640px) {
+  html {
+    font-size: 110%;
+  }
+}
+
+/* ── Theme Variables ── */
+:root {
+  --card: #1a212b;
+  --ring: #818cf8;
+  --input: #ffffff;
+  --muted: #333333;
+  --accent: #fcd34d;
+  --border: #545454;
+  --radius: 1rem;
+  --chart-1: #818cf8;
+  --chart-2: #2dd4bf;
+  --chart-3: #fcd34d;
+  --chart-4: #f472b6;
+  --chart-5: #4ade80;
+  --popover: #1a212b;
+  --primary: #818cf8;
+  --sidebar: #000000;
+  --spacing: 0.25rem;
+  --font-mono: "Space Mono", monospace;
+  --font-sans: "DM Sans", sans-serif;
+  --secondary: #2dd4bf;
+  --background: #000000;
+  --font-serif: "DM Sans", sans-serif;
+  --foreground: #ffffff;
+  --destructive: #f87171;
+  --sidebar-ring: #818cf8;
+  --sidebar-accent: #fcd34d;
+  --sidebar-border: #ffffff;
+  --card-foreground: #ffffff;
+  --sidebar-primary: #818cf8;
+  --muted-foreground: #cccccc;
+  --accent-foreground: #000000;
+  --popover-foreground: #ffffff;
+  --primary-foreground: #000000;
+  --sidebar-foreground: #ffffff;
+  --secondary-foreground: #000000;
+  --destructive-foreground: #000000;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-primary-foreground: #000000;
+}
+
+@theme inline {
+  --color-card: var(--card);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-popover: var(--popover);
+  --color-primary: var(--primary);
+  --color-sidebar: var(--sidebar);
+  --color-secondary: var(--secondary);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ══════════════════════════════════════════════
+   CLAYMORPHISM SYSTEM
+   Core: large radii, dual inset shadows (light
+   top-left + dark bottom-right), outer shadow
+   to ground. Inflated, puffy, tactile feel.
+   ══════════════════════════════════════════════ */
+
+.clay {
+  background: linear-gradient(145deg, #1e2736, #171d28);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    /* outer shadow — grounds the element */
+    8px 8px 20px rgba(0, 0, 0, 0.6),
+    -4px -4px 16px rgba(255, 255, 255, 0.015),
+    /* inner highlight — top-left light source */ inset 2px 2px 4px
+      rgba(255, 255, 255, 0.06),
+    /* inner shadow — bottom-right depth */ inset -2px -2px 4px
+      rgba(0, 0, 0, 0.4);
+}
+
+.clay-sm {
+  background: linear-gradient(145deg, #1e2736, #171d28);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    5px 5px 14px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(255, 255, 255, 0.01),
+    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.05),
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.35);
+}
+
+.clay-lg {
+  background: linear-gradient(145deg, #1f2838, #161c26);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    12px 12px 30px rgba(0, 0, 0, 0.7),
+    -6px -6px 20px rgba(255, 255, 255, 0.02),
+    inset 3px 3px 6px rgba(255, 255, 255, 0.07),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.45);
+}
+
+.clay-xl {
+  background: linear-gradient(145deg, #202a3a, #151b25);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    16px 16px 40px rgba(0, 0, 0, 0.7),
+    -8px -8px 24px rgba(255, 255, 255, 0.02),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.08),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 640px) {
+  .clay-xl {
+    border-radius: 40px;
+  }
+}
+
+.clay-pressed {
+  background: linear-gradient(145deg, #141a23, #1a212b);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  box-shadow:
+    inset 4px 4px 10px rgba(0, 0, 0, 0.6),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.02);
+}
+
+/* Colored clay variants */
+.clay-primary {
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 12px rgba(129, 140, 248, 0.08),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.clay-secondary {
+  background: linear-gradient(145deg, #2dd4bf, #14b8a6);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 12px rgba(45, 212, 191, 0.08),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.clay-accent {
+  background: linear-gradient(145deg, #fcd34d, #f59e0b);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 12px rgba(252, 211, 77, 0.08),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.25),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.clay-destructive {
+  background: linear-gradient(145deg, #f87171, #ef4444);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 12px rgba(248, 113, 113, 0.08),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Clay Buttons ── */
+.clay-btn {
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clay-btn-primary {
+  background: linear-gradient(145deg, #818cf8, #6366f1);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(129, 140, 248, 0.1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+}
+.clay-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 14px rgba(129, 140, 248, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.25),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+}
+.clay-btn-primary:active {
+  transform: translateY(1px);
+  box-shadow:
+    2px 2px 8px rgba(0, 0, 0, 0.5),
+    inset 2px 2px 6px rgba(0, 0, 0, 0.3),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.clay-btn-ghost {
+  background: linear-gradient(145deg, #1e2736, #171d28);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    5px 5px 14px rgba(0, 0, 0, 0.4),
+    -3px -3px 10px rgba(255, 255, 255, 0.01),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.04),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+}
+.clay-btn-ghost:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    7px 7px 18px rgba(0, 0, 0, 0.5),
+    -4px -4px 12px rgba(255, 255, 255, 0.015),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.06),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.clay-btn-accent {
+  background: linear-gradient(145deg, #fcd34d, #f59e0b);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(252, 211, 77, 0.1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.25),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.15);
+}
+.clay-btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    8px 8px 20px rgba(0, 0, 0, 0.5),
+    -4px -4px 14px rgba(252, 211, 77, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Clay Icon Containers ── */
+.clay-icon {
+  border-radius: 16px;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(255, 255, 255, 0.01),
+    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.08),
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Clay Badge / Pill ── */
+.clay-pill {
+  border-radius: 50px;
+  background: linear-gradient(145deg, #1e2736, #171d28);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(255, 255, 255, 0.01),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.05),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Gradient Text ── */
+.gradient-text-primary {
+  background: linear-gradient(135deg, #818cf8, #2dd4bf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-accent {
+  background: linear-gradient(135deg, #fcd34d, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, #fcd34d, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
+}
+
+/* ══════════════════════════════════════════════
+   HERO ANIMATIONS
+   ══════════════════════════════════════════════ */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 7s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out both;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation: fade-in-up 0.8s ease-out 0.15s both;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fade-in-up 0.8s ease-out 0.3s both;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fade-in-up 0.8s ease-out 0.45s both;
+}
+
+.animate-fade-in-up-delay-4 {
+  animation: fade-in-up 0.8s ease-out 0.6s both;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Hero grid background */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(129, 140, 248, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129, 140, 248, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(
+    ellipse 70% 50% at 50% 50%,
+    black 20%,
+    transparent 70%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 50% at 50% 50%,
+    black 20%,
+    transparent 70%
+  );
+}

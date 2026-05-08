@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.nyc_output/
+coverage/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+
+# Large files and databases
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.log
+*.sql
+*.gz
+*.tar
+*.zip
+*.rar
+*.7z
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.mp3
+*.wav
+*.iso
+
+# TypeScript
+*.tsbuildinfo
+
+# Next.js
+.next/
+
+# Misc
+temp/
+tmp/
+.temp/
+.tmp/

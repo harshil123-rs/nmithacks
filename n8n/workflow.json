@@ -1,0 +1,210 @@
+{
+  "name": "Problem Solvers — Multi-Agent AI Code Review",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "review-code",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "review-code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preprocess input: extract code, language, filename, context\nconst body = $input.first().json.body || $input.first().json;\nconst code = body.code || '';\nconst language = body.language || 'typescript';\nconst filename = body.filename || `review.${language}`;\nconst context = body.context || '';\n\nif (!code.trim()) {\n  throw new Error('No code provided');\n}\n\nreturn [{\n  json: {\n    code,\n    language,\n    filename,\n    context,\n    receivedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "preprocessor",
+      "name": "Preprocess Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BACKEND_URL }}/api/n8n/webhook/review-code",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "code", "value": "={{ $json.code }}" },
+            { "name": "language", "value": "={{ $json.language }}" },
+            { "name": "filename", "value": "={{ $json.filename }}" },
+            { "name": "context", "value": "={{ $json.context }}" }
+          ]
+        },
+        "options": {
+          "timeout": 300000,
+          "response": {
+            "response": { "responseFormat": "text" }
+          }
+        }
+      },
+      "id": "run-agents",
+      "name": "Run AI Agents (Backend)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse SSE stream from backend and extract the review:completed event\nconst raw = $input.first().json.data || '';\nlet result = null;\n\nconst chunks = raw.split('\\n\\n');\nfor (const chunk of chunks) {\n  const lines = chunk.split('\\n');\n  let eventType = '';\n  let dataStr = '';\n  for (const line of lines) {\n    if (line.startsWith('event: ')) eventType = line.slice(7).trim();\n    if (line.startsWith('data: ')) dataStr = line.slice(6).trim();\n  }\n  if (eventType === 'review:completed' && dataStr) {\n    try { result = JSON.parse(dataStr); } catch {}\n  }\n}\n\nif (!result) {\n  return [{ json: { error: 'No review result found in stream', raw: raw.slice(0, 500) } }];\n}\n\nreturn [{ json: result }];"
+      },
+      "id": "parse-result",
+      "name": "Parse Review Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "critical-check",
+              "leftValue": "={{ $json.severityCounts.critical }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "check-critical",
+      "name": "Has Critical Issues?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"🚨 Critical Security Issue Found!\",\n    \"color\": 16711680,\n    \"fields\": [\n      { \"name\": \"Review ID\", \"value\": \"`{{ $('Parse Review Result').item.json.reviewId }}`\", \"inline\": true },\n      { \"name\": \"Score\", \"value\": \"{{ $('Parse Review Result').item.json.score }}/100\", \"inline\": true },\n      { \"name\": \"Verdict\", \"value\": \"{{ $('Parse Review Result').item.json.verdict }}\", \"inline\": true },\n      { \"name\": \"Critical Count\", \"value\": \"{{ $('Parse Review Result').item.json.severityCounts.critical }}\", \"inline\": true },\n      { \"name\": \"Summary\", \"value\": \"{{ $('Parse Review Result').item.json.summary.slice(0,300) }}\" }\n    ],\n    \"timestamp\": \"{{ new Date().toISOString() }}\",\n    \"footer\": { \"text\": \"Problem Solvers — AI Code Review\" }\n  }]\n}",
+        "options": {}
+      },
+      "id": "discord-alert",
+      "name": "Discord Alert (Critical)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 180]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "medium-check",
+              "leftValue": "={{ $json.severityCounts.medium }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ],
+          "combinator": "or"
+        }
+      },
+      "id": "check-medium",
+      "name": "Has Medium Issues?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 420]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"🔍 *Code Review Complete* — Score: {{ $('Parse Review Result').item.json.score }}/100\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"🔍 *Code Review Complete*\\n*Score:* {{ $('Parse Review Result').item.json.score }}/100\\n*Verdict:* {{ $('Parse Review Result').item.json.verdict }}\\n*Medium Issues:* {{ $('Parse Review Result').item.json.severityCounts.medium }}\\n*Summary:* {{ $('Parse Review Result').item.json.summary.slice(0,200) }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "slack-alert",
+      "name": "Slack Alert (Medium)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build final unified response\nconst result = $('Parse Review Result').item.json;\nreturn [{\n  json: {\n    success: true,\n    reviewId: result.reviewId,\n    score: result.score,\n    verdict: result.verdict,\n    summary: result.summary,\n    confidenceScore: result.confidenceScore,\n    severityCounts: result.severityCounts,\n    topActions: result.topActions,\n    security: result.security || [],\n    bugs: result.bugs || [],\n    performance: result.performance || [],\n    readability: result.readability || [],\n    bestPractices: result.bestPractices || [],\n    documentation: result.documentation || [],\n    totalFindings: result.totalFindings,\n    completedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "build-response",
+      "name": "Build Final Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": { "responseCode": 200 }
+      },
+      "id": "respond",
+      "name": "Respond to Caller",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [[{ "node": "Preprocess Input", "type": "main", "index": 0 }]]
+    },
+    "Preprocess Input": {
+      "main": [[{ "node": "Run AI Agents (Backend)", "type": "main", "index": 0 }]]
+    },
+    "Run AI Agents (Backend)": {
+      "main": [[{ "node": "Parse Review Result", "type": "main", "index": 0 }]]
+    },
+    "Parse Review Result": {
+      "main": [[
+        { "node": "Has Critical Issues?", "type": "main", "index": 0 },
+        { "node": "Has Medium Issues?", "type": "main", "index": 0 },
+        { "node": "Build Final Response", "type": "main", "index": 0 }
+      ]]
+    },
+    "Has Critical Issues?": {
+      "main": [
+        [{ "node": "Discord Alert (Critical)", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Has Medium Issues?": {
+      "main": [
+        [{ "node": "Slack Alert (Medium)", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Build Final Response": {
+      "main": [[{ "node": "Respond to Caller", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["ai", "code-review", "multi-agent", "problem-solvers"],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-08T00:00:00.000Z",
+  "versionId": "1"
+}
