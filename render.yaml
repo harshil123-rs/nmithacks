@@ -1,0 +1,70 @@
+# Render Blueprint for LGTM — AI-powered PR review platform
+#
+# Usage:
+# 1. Connect this repo to Render.com using "New Blueprint"
+# 2. Render will automatically create the API, Worker, Redis, and Frontend.
+# 3. IMPORTANT: Go to your Render dashboard to set your secret environment variables
+#    (MongoDB URI, GitHub OAuth keys, AI API keys, JWT Secrets, etc.) on the API and Worker services.
+
+services:
+  # ── Backend Web API ─────────────────────────────────────────────────────────
+  - type: web
+    name: lgtm-api
+    env: node
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        value: https://lgtm-client.onrender.com # Change this if your frontend gets a different name/custom domain
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: lgtm-redis
+          property: connectionString
+      # Note: Secrets like MONGODB_URI, JWT_SECRET, GITHUB_CLIENT_ID, etc. 
+      # should be added manually in the Render dashboard after creation for security.
+
+  # ── Backend Background Worker (BullMQ) ──────────────────────────────────────
+  - type: worker
+    name: lgtm-worker
+    env: node
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: lgtm-redis
+          property: connectionString
+      # Note: Secrets should be synced to this worker as well (MongoDB, AI keys, etc.)
+
+  # ── Frontend React App ──────────────────────────────────────────────────────
+  - type: web
+    name: lgtm-client
+    env: static
+    rootDir: client
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      # React Router SPA catch-all fallback
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://lgtm-api.onrender.com # Render uses the service name for the generic URL
+      # Add VITE_DODO_ENV and VITE_SENTRY_DSN in the dashboard if needed
+
+  # ── Managed Redis (for BullMQ queues) ───────────────────────────────────────
+  - type: redis
+    name: lgtm-redis
+    ipAllowList: []
+    plan: free # Change to a paid plan for production workloads
