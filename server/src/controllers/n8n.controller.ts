@@ -223,7 +223,7 @@ export async function webhookReviewCode(
 // ── Status endpoint ───────────────────────────────────────────────────────────
 
 export function getN8nReview(req: Request, res: Response): void {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const review = reviewStore.get(id);
   if (!review) {
     res.status(404).json({ error: "Review not found" });
