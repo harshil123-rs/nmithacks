@@ -85,4 +85,21 @@ app.use("/api/n8n", n8nRoutes);
 // Dodo Payments webhook (uses raw body from /webhooks middleware)
 app.post("/webhooks/dodo", handleDodoWebhook);
 
+import path from "path";
+import fs from "fs";
+
+// Serve frontend static files if they exist (used for single-container Docker deployment)
+const clientDistPath = path.join(__dirname, "../../client/dist");
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  
+  // React SPA catch-all (exclude API routes)
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/auth") || req.path.startsWith("/webhooks")) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+}
+
 export default app;
