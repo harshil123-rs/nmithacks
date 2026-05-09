@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : window.location.origin),
+  baseURL: import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : "https://nmithacks.onrender.com"),
   withCredentials: true,
 });
 
@@ -59,7 +59,7 @@ api.interceptors.response.use(
         throw new Error("No refresh token");
       }
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : window.location.origin)}/auth/refresh`,
+        `${import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : "https://nmithacks.onrender.com")}/auth/refresh`,
         { refreshToken },
       );
 

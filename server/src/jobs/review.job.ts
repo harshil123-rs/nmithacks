@@ -848,7 +848,7 @@ async function postGitHubReview(
   finalVerdict: string,
   chatAllowedCommands: string[] = [],
 ): Promise<number> {
-  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+  const clientUrl = process.env.CLIENT_URL || "https://meowmeowyay.vercel.app";
 
   // ── Build the review body — written like a senior maintainer, not a robot ──
 

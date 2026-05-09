@@ -11,7 +11,7 @@ import DodoPayments from "dodopayments";
 import { User } from "../models/User";
 
 const DODO_PRODUCT_ID = process.env.DODO_PRODUCT_ID || "";
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_URL = process.env.CLIENT_URL || "https://meowmeowyay.vercel.app";
 
 const dodoClient = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY || "",

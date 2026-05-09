@@ -494,7 +494,7 @@ async function main() {
     if (shouldPost) {
       logSection("Test 5: GitHub PR Review Posting");
 
-      const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+      const clientUrl = process.env.CLIENT_URL || "https://meowmeowyay.vercel.app";
       const reviewId = "test-" + Date.now();
 
       // Build review body (same logic as review.job.ts)

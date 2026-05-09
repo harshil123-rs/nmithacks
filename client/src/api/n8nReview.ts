@@ -3,7 +3,7 @@
  * Handles SSE streaming from the webhook endpoint
  */
 
-const BASE = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : window.location.origin);
+const BASE = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : "https://nmithacks.onrender.com");
 
 export interface AgentFinding {
   file: string;
