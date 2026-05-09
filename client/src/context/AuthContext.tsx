@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(() => {
     setIsSigningIn(true);
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const apiUrl = import.meta.env.VITE_API_URL || (window.location.hostname === "localhost" ? "http://localhost:3000" : window.location.origin);
     window.location.href = `${apiUrl}/auth/github`;
   }, []);
 

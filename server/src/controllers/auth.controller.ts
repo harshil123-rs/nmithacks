@@ -35,9 +35,13 @@ export function githubRedirect(req: Request, res: Response): void {
   };
   const state = Buffer.from(JSON.stringify(statePayload)).toString("base64url");
 
+  const host = req.headers.host;
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol;
+  const baseUrl = process.env.API_URL || `${protocol}://${host}`;
+
   const params = new URLSearchParams({
     client_id: process.env.GITHUB_CLIENT_ID!,
-    redirect_uri: `${process.env.API_URL || `http://localhost:${process.env.PORT || 3000}`}/auth/github/callback`,
+    redirect_uri: `${baseUrl}/auth/github/callback`,
     scope: "repo user",
     state,
   });
@@ -58,6 +62,10 @@ export async function githubCallback(
   // Decode CLI context from state
   let cliMode = false;
   let cliPort: string | null = null;
+  const host = req.headers.host;
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol;
+  const clientUrl = process.env.CLIENT_URL || process.env.API_URL || `${protocol}://${host}`;
+
   if (state && typeof state === "string") {
     try {
       const decoded = JSON.parse(
@@ -76,7 +84,7 @@ export async function githubCallback(
     const errTarget =
       cliMode && cliPort
         ? `http://localhost:${cliPort}/callback?error=missing_code`
-        : `${process.env.CLIENT_URL}/login?error=missing_code`;
+        : `${clientUrl}/login?error=missing_code`;
     res.redirect(errTarget);
     return;
   }
@@ -106,7 +114,7 @@ export async function githubCallback(
       const errTarget =
         cliMode && cliPort
           ? `http://localhost:${cliPort}/callback?error=token_exchange`
-          : `${process.env.CLIENT_URL}/login?error=token_exchange`;
+          : `${clientUrl}/login?error=token_exchange`;
       res.redirect(errTarget);
       return;
     }
@@ -127,7 +135,7 @@ export async function githubCallback(
       const errTarget =
         cliMode && cliPort
           ? `http://localhost:${cliPort}/callback?error=token_exchange`
-          : `${process.env.CLIENT_URL}/login?error=token_exchange`;
+          : `${clientUrl}/login?error=token_exchange`;
       res.redirect(errTarget);
       return;
     }
@@ -213,7 +221,7 @@ export async function githubCallback(
         refresh_token: refreshToken,
       });
       res.redirect(
-        `${process.env.CLIENT_URL}/auth/callback?${params.toString()}`,
+        `${clientUrl}/auth/callback?${params.toString()}`,
       );
     }
   } catch (err) {
@@ -221,7 +229,7 @@ export async function githubCallback(
     const errTarget =
       cliMode && cliPort
         ? `http://localhost:${cliPort}/callback?error=server_error`
-        : `${process.env.CLIENT_URL}/login?error=server_error`;
+        : `${clientUrl}/login?error=server_error`;
     res.redirect(errTarget);
   }
 }
