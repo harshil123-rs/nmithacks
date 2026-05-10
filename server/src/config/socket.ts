@@ -6,7 +6,7 @@ let io: SocketServer;
 export function initSocket(httpServer: HttpServer): SocketServer {
   io = new SocketServer(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || "https://meowmeowyay.vercel.app",
+      origin: process.env.CLIENT_URL || "https://nmithacks.vercel.app",
       credentials: true,
     },
   });

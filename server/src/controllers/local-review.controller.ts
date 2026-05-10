@@ -377,7 +377,7 @@ export async function localReview(req: Request, res: Response): Promise<void> {
       },
     );
 
-    const clientUrl = process.env.CLIENT_URL || "https://meowmeowyay.vercel.app";
+    const clientUrl = process.env.CLIENT_URL || "https://nmithacks.vercel.app";
     const totalFindings = successfulOutputs.reduce(
       (s, o) => s + o.findings.length,
       0,

@@ -64,7 +64,7 @@ export async function githubCallback(
   let cliPort: string | null = null;
   const host = req.headers.host;
   const protocol = req.headers["x-forwarded-proto"] || req.protocol;
-  const clientUrl = process.env.CLIENT_URL || "https://meowmeowyay.vercel.app";
+  const clientUrl = process.env.CLIENT_URL || "https://nmithacks.vercel.app";
 
   if (state && typeof state === "string") {
     try {

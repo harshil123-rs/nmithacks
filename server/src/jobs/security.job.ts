@@ -664,7 +664,7 @@ async function fireAlerts(args: {
     } else {
       try {
         const clientUrl =
-          process.env.CLIENT_URL?.replace(/\/+$/, "") ?? "https://meowmeowyay.vercel.app";
+          process.env.CLIENT_URL?.replace(/\/+$/, "") ?? "https://nmithacks.vercel.app";
         const dashboardUrl = `${clientUrl}/dashboard/security/${monitor.repoId.toString()}`;
         const rendered = renderSecurityAlertEmail({
           repoFullName,
